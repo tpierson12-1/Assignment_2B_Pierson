@@ -7,6 +7,114 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <header class="portal-header">
+      <div class="header-content">
+        <div class="brand">
+          <span class="brand-logo">🌿</span>
+          <h1>Greenhouse <span class="brand-sub">Sensor Logger</span></h1>
+        </div>
+        <div class="header-status">
+          Active Queue: <span id="queue-count" class="badge-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- The main section will have 2 containers for input and output -->
+    <main class="portal-container">
+      <aside class="panel form-panel">
+        <!--Left container for the input form fields-->
+        <h2 class="panel-title">Record Telemetry Readings</h2>
+
+        <!-- hidden element which alert if the user goes out of bounds -->
+        <div
+          id="form-error-banner"
+          class="alert alert-danger hidden"
+          role="alert"
+        ></div>
+
+        <!-- Form input -->
+        <form action="#" id="data-form" novalidate>
+          <div class="form-group">
+            <label for="pH" class="form-label"
+              >pH Level <span class="required">*</span></label
+            >
+            <input
+              type="number"
+              name="pH"
+              id="pH"
+              class="form-control"
+              placeholder="2.0"
+              step="0.1"
+              min="0"
+              max="14"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="EC" class="form-label">
+                Electrical Conductivity (mS/cm)
+                <span class="required">*</span></label
+              >
+              <input
+                type="number"
+                name="EC"
+                id="EC"
+                class="form-control"
+                placeholder="1.0"
+                required
+                step="0.1"
+                min="0"
+                max="9"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="temperature" class="form-label">
+              Temperature (F) <span class="required">*</span></label
+            >
+            <input
+              type="number"
+              name="temperature"
+              id="temperature"
+              class="form-control"
+              placeholder="64.4"
+              required
+              step="0.2"
+              min="35"
+              max="110"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="humidity" class="form-label">
+              Relative Humidity (RH) % <span class="required"> *</span></label
+            >
+            <input
+              type="number"
+              name="humidity"
+              id="humidity"
+              class="form-control"
+              placeholder="45"
+              required
+              step="15"
+              min="0"
+              max="100"
+            />
+          </div>
+
+          <button
+            type="submit"
+            id="btn submit"
+            class="btn btn-primary btn-block"
+          >
+            Log Telemetry Reading
+          </button>
+        </form>
+      </aside>
+    </main>
     <script src="app.js"></script>
   </body>
 </html>
