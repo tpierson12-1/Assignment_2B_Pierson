@@ -114,7 +114,29 @@
           </button>
         </form>
       </aside>
+
+      <!-- Right container for output -->
+      <section class="panel records-panel">
+        <div class="records-header">
+          <h2 class="panel-title">Telemetry Queue</h2>
+          <button id="btn-clear-all" class="btn btn-outline-danger btn-sm">
+            Clear Queue
+          </button>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+          <span class="empty-icon">📝</span>
+          <p>No active telemetry readings records logged.</p>
+        </div>
+
+        <ul id="records-list" class="records-grid" aria-live="polite"></ul>
+      </section>
     </main>
+    <footer class="portal-footer">
+      <p>&copy; 2026 Greenhouse Sensor Logger UI</p>
+    </footer>
+
+    <!-- Integrate JS file -->
     <script src="app.js"></script>
   </body>
 </html>
