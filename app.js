@@ -43,5 +43,16 @@
         console.error("Failed to write to your data store", error);
       }
     }
+
+    // Process logic for the risk badges
+    function evaluateRisk(pH, EC, temperature, humidity) {
+      if (pH >= 7.5 || temperature >= 95 || EC >= 4.5 || humidity >= 90) {
+        return { level: "critical", label: "Critical" };
+      }
+      if (pH <= 6.5 || temperature <= 71.6 || EC <= 2.0 || humidity <= 70) {
+        return { level: "optimal", label: "Optimal" };
+      }
+      return { level: "warning", label: "Warning" };
+    }
   }
 });
