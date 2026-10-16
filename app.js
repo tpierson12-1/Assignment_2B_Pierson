@@ -80,4 +80,74 @@
       return errors;
     }
   }
+  // event handlers
+  readingForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const telemetryReadingsForm = {
+      id: crypto.randomUUID(),
+      pH: parseInt(inputPh.value, 10),
+      EC: parseInt(inputEc.value, 10),
+      temperature: parseFloat(inputTemp.value),
+      humidity: parseInt(inputHumidity.value, 10),
+      timestamp: new Date().toLocaleDateString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+  });
+
+  const validationErrors = validateInput(telemetryReadingsForm);
+  if (validationErrors.length > 0) {
+    displayError(validationErrors.join(" "));
+    return;
+  }
+  hideError();
+
+  // verify the risk level
+  telemetryReadingsForm.risk = evaluateRisk(
+    telemetryReadingsForm.pH,
+    telemetryReadingsForm.EC,
+    telemetryReadingsForm.temperature,
+    telemetryReadingsForm.humidity,
+  );
+
+  // keep track of the telemetry readings
+  readings.unshift(telemetryReadingsForm);
+
+  // commit to the memory
+  saveReadings();
+
+  // reset the user form after the data being stored
+  telemetryReadingsForm.reset();
+
+  // bring focus in the first field in the form
+  inputPh.focus();
+
+  recordsList.addEventListener("click", function (event) {
+    const target = event.target;
+    if (target.classList.contains("btn-delete")) {
+      const readingId = target.dataset.id;
+      readings = readings.filter(function (reading) {
+        return reading.id == readingId;
+      });
+      saveReadings();
+      render();
+    }
+  });
+
+  btnClearAll.addEventListener("click", (event) => {
+    if (readings.length === 0) {
+      return;
+    }
+    if (
+      confirm(
+        "Are you sure that you want to delete all the telemetry readings?",
+      )
+    ) {
+      readings = [];
+      saveReadings();
+      render();
+    }
+  });
 });
