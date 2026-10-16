@@ -54,5 +54,30 @@
       }
       return { level: "warning", label: "Warning" };
     }
+
+    // Form input validation
+    function validateInput(data) {
+      const errors = [];
+
+      if (isNaN(data.pH) || data.pH < 5.0 || data.pH > 7.5) {
+        errors.push("pH must be number and between 5.0 to 7.5 pH");
+      }
+      if (isNaN(data.EC) || data.EC < 0.2 || data.EC > 4.5) {
+        errors.push(
+          "Electrical Conductivity must be number and between 0.2 to 4.5 mS/cm",
+        );
+      }
+      if (
+        isNaN(data.temperature) ||
+        data.temperature < 55 ||
+        data.temperature > 95
+      ) {
+        errors.push("Temperature must be number and between 55 to 95 F");
+      }
+      if (isNaN(data.humidity) || data.humidity < 30 || data.humidity > 90) {
+        errors.push("Relative Humidity must be number and between 30 to 90 %");
+      }
+      return errors;
+    }
   }
 });
