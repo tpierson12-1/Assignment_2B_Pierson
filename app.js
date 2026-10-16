@@ -6,11 +6,42 @@
   //create a storage key
   const STORAGE_KEY = "greenhouse_telemary_readings_v1";
 
-  // use the dom element to be stored as JS objects by using the document API
+  // use the dom elements to be stored as JS objects by using the document API
   const readingForm = document.getElementById("reading-form");
   const errorBanner = document.getElementById("form-error-banner");
   const recordsList = document.getElementById("records-list");
   const queueCount = document.getElementById("queue-count");
   const emptyState = document.getElementById("empty-state");
   const btnClearAll = document.getElementById("btn-clear-all");
+
+  // create dom elements for the html form fields
+  const inputPh = document.getElementById("pH");
+  const inputEc = document.getElementById("EC");
+  const inputTemp = document.getElementById("temperature");
+  const inputHumidity = document.getElementById("humidity");
+
+  let readings = loadReadings();
+
+  // initialize the UI
+  render();
+
+  // Read operation for the telemetry readings
+  function loadReadings() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Failed to load readings from your data store", error);
+      return [];
+    }
+
+    // Write operation for telemetry readings
+    function saveReadings() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(readings));
+      } catch (error) {
+        console.error("Failed to write to your data store", error);
+      }
+    }
+  }
 });
