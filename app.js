@@ -14,8 +14,8 @@
   const emptyState = document.getElementById("empty-state");
   const btnClearAll = document.getElementById("btn-clear-all");
 
-  const inputPh = document.getElementById("pH");
-  const inputEC = document.getElementById("EC");
+  const inputPh = document.getElementById("ph");
+  const inputEC = document.getElementById("ec");
   const inputHumidity = document.getElementById("humidity");
   const inputTemp = document.getElementById("temperature");
 
@@ -47,11 +47,11 @@
   }
 
   // procsesing logic for Risk
-  function evaluateRisk(pH, EC, temp, humidity) {
-    if (pH > 7.5 || EC > 4.5 || temp > 95 || humidity > 90) {
+  function evaluateRisk(ph, ec, temperature, humidity) {
+    if (ph > 7.5 || ec > 4.5 || temperature > 95 || humidity > 90) {
       return { level: "critical", label: "Critical" };
     }
-    if (pH <= 6.5 || EC <= 2.0 || temp <= 71.6 || humidity <= 70) {
+    if (ph <= 6.5 || ec <= 2.0 || temperature <= 71.6 || humidity <= 70) {
       return { level: "optimal", label: "Optimal" };
     }
     return { level: "warning", label: "Warning" };
@@ -61,16 +61,20 @@
   function validateInput(data) {
     const errors = [];
 
-    if (isNaN(data.pH) || data.pH < 5.0 || data.pH > 7.5) {
+    if (isNaN(data.ph) || data.ph < 5.0 || data.ph > 7.5) {
       errors.push("pH must be a number and between 5.0 to 7.5");
     }
-    if (isNaN(data.EC) || data.EC < 0.2 || data.EC > 4.5) {
+    if (isNaN(data.ec) || data.ec < 0.2 || data.ec > 4.5) {
       errors.push("EC must be a number and between 0.2 to 4.5 mS/cm");
     }
     if (isNaN(data.humidity) || data.humidity < 30 || data.humidity > 90) {
       errors.push("Humidity be a number and between 30 to 90 %");
     }
-    if (isNaN(data.temp) || data.temp < 55 || data.temp > 95) {
+    if (
+      isNaN(data.temperature) ||
+      data.temperature < 55 ||
+      data.temperature > 95
+    ) {
       errors.push("Temperature must be a number and between 55 to 95 degree F");
     }
 
@@ -81,19 +85,19 @@
   readingForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const formData = {
+    const telemetryReadingsData = {
       id: crypto.randomUUID(),
-      pH: parseInt(inputPh.value, 10),
-      EC: parseInt(inputEC.value, 10),
+      ph: parseFloat(inputPh.value),
+      ec: parseFloat(inputEC.value),
       humidity: parseInt(inputHumidity.value, 10),
-      temp: parseFloat(inputTemp.value),
+      temperature: parseFloat(inputTemp.value),
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     };
 
-    const validationErrors = validateInput(formData);
+    const validationErrors = validateInput(telemetryReadingsData);
 
     if (validationErrors.length > 0) {
       displayError(validationErrors.join(" "));
@@ -103,15 +107,15 @@
     hideError();
 
     // classify risk level
-    formData.risk = evaluateRisk(
-      formData.pH,
-      formData.EC,
-      formData.humidity,
-      formData.temp,
+    telemetryReadingsData.risk = evaluateRisk(
+      telemetryReadingsData.ph,
+      telemetryReadingsData.ec,
+      telemetryReadingsData.temperature,
+      telemetryReadingsData.humidity,
     );
 
     // add this to our records array to keep track of all the user's reading data
-    records.unshift(formData);
+    records.unshift(telemetryReadingsData);
 
     // commit this to the memory
     saveRecords();
@@ -139,7 +143,7 @@
   btnClearAll.addEventListener("click", (event) => {
     if (records.length === 0) return;
     if (
-      confirm("Are you sure you want to delete all the telemetry readings?")
+      confirm("Are you sure that you want to delete all telemetry readings?")
     ) {
       records = [];
       saveRecords();
@@ -162,16 +166,47 @@
     // create a virtual dom that minimizes the browser everytime it reloads
     const fragment = document.createDocumentFragment();
 
-    // dynamically show error msg
-    function displayError(message) {
-      errorBanner.textContent = message;
-      errorBanner.classList.remove("hidden");
-    }
+    records.forEach(function (rec) {
+      const li = document.createElement("li");
+      li.className = "reading-card status-" + rec.risk.level;
 
-    // dynamically hide the error msg on correct input
-    function hideError() {
-      errorBanner.textContent = "";
-      errorBanner.classList.add("hidden");
-    }
+      li.innerHTML = `<div class="card-top">
+    <div>
+      <div class="timestamp">Logged at ${rec.timestamp} </div>
+      <span class="risk-badge ${rec.risk.level}">${rec.risk.level}</span>
+    </div>
+
+    <div class="reading-stats"> 
+      <div class="reading-item"><span>pH</span>${rec.ph}</div>
+      <div class="reading-item"><span>EC</span>${rec.ec}</div>
+      <div class="reading-item"><span>Temperature</span>${rec.toFixed(1)} F </div>
+      <div class="reading-item"><span>Relative Humidity</span>${rec.humidity} % </div>
+    </div>
+    <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${rec.id}">Delete Reading </button>
+    </div>`;
+    });
+
+    recordsList.innerHTML = "";
+
+    recordsList.appendChild(fragment);
+  }
+
+  // dynamically show error msg
+  function displayError(message) {
+    errorBanner.textContent = message;
+    errorBanner.classList.remove("hidden");
+  }
+
+  // dynamically hide the error msg on correct input
+  function hideError() {
+    errorBanner.textContent = "";
+    errorBanner.classList.add("hidden");
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace("/</g", "&lt;")
+      .replace("/>/g", "&gt;");
   }
 })();
