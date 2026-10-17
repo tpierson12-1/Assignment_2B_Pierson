@@ -1,15 +1,12 @@
+// declare IIFE
+
 (function () {
   "use strict()";
 
-  // we are going to store data in the broser's local storage
-  // which is accessed using the localStorage API
-  // We need to give this storage a name;
+  // create a storage key
   const STORAGE_KEY = "greenhouse_telemetry_readings_v1";
 
-  // Bring in the DOM elements and store it as JS objects
-  // use the document API
-
-  // const vitalsForm = document.querySelectorAll(".test")
+  // use the document API to store the dom elements as JS objects
   const readingForm = document.getElementById("reading-form");
   const errorBanner = document.getElementById("form-error-banner");
   const recordsList = document.getElementById("records-list");
@@ -17,8 +14,7 @@
   const emptyState = document.getElementById("empty-state");
   const btnClearAll = document.getElementById("btn-clear-all");
 
-  // grab the input field within the html form
-  const inputPh = document.getElementById("ph");
+  const inputPh = document.getElementById("pH");
   const inputEC = document.getElementById("EC");
   const inputHumidity = document.getElementById("humidity");
   const inputTemp = document.getElementById("temperature");
@@ -126,4 +122,56 @@
     // bring the input focus to the first input field
     inputPh.focus();
   });
+  recordsList.addEventListener("click", function (event) {
+    // confirm which reading card delete btn was clicked
+    const target = event.target;
+    if (target.classList.contains("btn-delete")) {
+      const recordId = target.dataset.id;
+      records = records.filter(function (record) {
+        return record.id !== recordId;
+      });
+      saveRecords();
+      render();
+    }
+  });
+
+  // delete all event
+  btnClearAll.addEventListener("click", (event) => {
+    if (records.length === 0) return;
+    if (
+      confirm("Are you sure you want to delete all the telemetry readings?")
+    ) {
+      records = [];
+      saveRecords();
+      render();
+    }
+  });
+
+  // dom render
+  function render() {
+    queueCount.textContent = records.length;
+
+    if (records.length === 0) {
+      emptyState.classList.remove("hidden");
+      recordsList.innerHTML = "";
+      return;
+    }
+
+    emptyState.classList.add("hidden");
+
+    // create a virtual dom that minimizes the browser everytime it reloads
+    const fragment = document.createDocumentFragment();
+
+    // dynamically show error msg
+    function displayError(message) {
+      errorBanner.textContent = message;
+      errorBanner.classList.remove("hidden");
+    }
+
+    // dynamically hide the error msg on correct input
+    function hideError() {
+      errorBanner.textContent = "";
+      errorBanner.classList.add("hidden");
+    }
+  }
 })();
