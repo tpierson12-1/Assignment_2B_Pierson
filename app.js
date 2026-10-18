@@ -57,7 +57,7 @@
     return { level: "warning", label: "Warning" };
   }
 
-  // INput form validation:
+  // form validation:
   function validateInput(data) {
     const errors = [];
 
@@ -110,8 +110,8 @@
     telemetryReadingsData.risk = evaluateRisk(
       telemetryReadingsData.ph,
       telemetryReadingsData.ec,
-      telemetryReadingsData.temperature,
       telemetryReadingsData.humidity,
+      telemetryReadingsData.temperature,
     );
 
     // add this to our records array to keep track of all the user's reading data
@@ -126,6 +126,7 @@
     // bring the input focus to the first input field
     inputPh.focus();
   });
+
   recordsList.addEventListener("click", function (event) {
     // confirm which reading card delete btn was clicked
     const target = event.target;
@@ -160,7 +161,6 @@
       recordsList.innerHTML = "";
       return;
     }
-
     emptyState.classList.add("hidden");
 
     // create a virtual dom that minimizes the browser everytime it reloads
@@ -179,11 +179,14 @@
     <div class="reading-stats"> 
       <div class="reading-item"><span>pH</span>${rec.ph}</div>
       <div class="reading-item"><span>EC</span>${rec.ec}</div>
-      <div class="reading-item"><span>Temperature</span>${rec.toFixed(1)} F </div>
+      <div class="reading-item"><span>Temperature</span>${rec.temperature.toFixed(1)} F </div>
       <div class="reading-item"><span>Relative Humidity</span>${rec.humidity} % </div>
     </div>
     <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${rec.id}">Delete Reading </button>
     </div>`;
+
+      // add this to the virtual dom
+      fragment.appendChild(li);
     });
 
     recordsList.innerHTML = "";
@@ -204,9 +207,6 @@
   }
 
   function escapeHtml(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace("/</g", "&lt;")
-      .replace("/>/g", "&gt;");
+    return str.replace("/</g", "&lt;").replace("/>/g", "&gt;");
   }
 })();
